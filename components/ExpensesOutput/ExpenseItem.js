@@ -3,38 +3,54 @@ import { GlobalStyles } from "../../constants/styles";
 import { getFormatedDate } from "../../util/date";
 
 function ExpenseItem({ description, date, amount }) {
+  function expensePressHandler() {}
+
   return (
-    <Pressable>
-      <View style={styles.expenseItem}>
-        <View>
-          <Text style={[styles.textBase, styles.description]}>
-            {description}
-          </Text>
-          <Text style={styles.textBase}>{getFormatedDate(date)}</Text>
+    <View style={styles.outerContainer}>
+      <Pressable
+        android_ripple={{ color: GlobalStyles.colors.primary100 }}
+        onPress={expensePressHandler}
+        style={({ pressed }) => pressed && styles.pressed}
+      >
+        <View style={styles.expenseItem}>
+          <View>
+            <Text style={[styles.textBase, styles.description]}>
+              {description}
+            </Text>
+            <Text style={styles.textBase}>{getFormatedDate(date)}</Text>
+          </View>
+          <View style={styles.amountContainer}>
+            <Text style={styles.amount}>{amount.toFixed(2)}</Text>
+          </View>
         </View>
-        <View style={styles.amountContainer}>
-          <Text style={styles.amount}>{amount}</Text>
-        </View>
-      </View>
-    </Pressable>
+      </Pressable>
+    </View>
   );
 }
 
 export default ExpenseItem;
 
 const styles = StyleSheet.create({
-  expenseItem: {
-    padding: 12,
-    marginVertical: 8,
-    backgroundColor: GlobalStyles.colors.primary500,
-    flexDirection: "row",
-    justifyContent: "space-between",
+  pressed: {
+    opacity: 0.75,
+  },
+  outerContainer: {
+    overflow: "hidden",
+    flex: 1,
     borderRadius: 6,
     elevation: 3,
+    marginVertical: 8,
     shadowColor: GlobalStyles.colors.gray500,
     shadowRadius: 4,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.4,
+    backgroundColor: GlobalStyles.colors.primary500,
+  },
+  expenseItem: {
+    padding: 12,
+    marginVertical: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   textBase: {
     color: GlobalStyles.colors.primary50,
