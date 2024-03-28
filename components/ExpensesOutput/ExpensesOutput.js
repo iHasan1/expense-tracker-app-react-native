@@ -11,7 +11,6 @@ function ExpensesOutput({ expenses, expensesPeriod, fallBackText }) {
     content = <ExpensesList expenses={expenses} />;
   }
 
-  console.log(expenses);
   return (
     <View style={styles.container}>
       <ExpensesSummary expenses={expenses} periodName={expensesPeriod} />
