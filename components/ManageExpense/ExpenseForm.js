@@ -6,26 +6,35 @@ import Button from "../UI/Button";
 import { getFormatedDate } from "../../util/date";
 
 function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
-  const [inputValues, setInputValues] = useState({
-    amount: defaultValues ? defaultValues.amount.toString() : "",
-    date: defaultValues ? getFormatedDate(defaultValues.date) : "",
-    description: defaultValues ? defaultValues.description : "",
+  const [inputs, setInputs] = useState({
+    amount: {
+      value: defaultValues ? defaultValues.amount.toString() : "",
+      isValid: true, // setting to true is wrong, only doing it do that alert message is not shown on add screen on the first try
+    },
+    date: {
+      value: defaultValues ? getFormatedDate(defaultValues.date) : "",
+      isValid: true,
+    },
+    description: {
+      value: defaultValues ? defaultValues.description : "",
+      isValid: true,
+    },
   });
 
-  function inputChangedHandler(inputIdentifier, enteredText) {
-    setInputValues((currentInputValues) => {
+  function inputChangedHandler(inputIdentifier, enteredValue) {
+    setInputs((curInputs) => {
       return {
-        ...currentInputValues,
-        [inputIdentifier]: enteredText,
+        ...curInputs,
+        [inputIdentifier]: { value: enteredValue, isValid: true },
       };
     });
   }
 
   function submitHandler() {
     const expenseData = {
-      amount: +inputValues.amount,
-      date: new Date(inputValues.date),
-      description: inputValues.description,
+      amount: +inputs.amount.value,
+      date: new Date(inputs.date.value),
+      description: inputs.description.value,
     };
 
     const amountIsValid = !isNaN(expenseData.amount) && expenseData.amount > 0;
@@ -33,12 +42,27 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
     const descriptionIsValid = expenseData.description.trim().length > 0;
 
     if (!amountIsValid || !dateIsValid || !descriptionIsValid) {
-      Alert.alert("Invalid input", "Please check your input values");
+      // Alert.alert("Invalid input", "Please check your input values");
+      setInputs((curInputs) => {
+        return {
+          amount: { value: curInputs.amount.value, isValid: amountIsValid },
+          date: { value: curInputs.date.value, isValid: dateIsValid },
+          description: {
+            value: curInputs.description.value,
+            isValid: descriptionIsValid,
+          },
+        };
+      });
       return;
     }
 
     onSubmit(expenseData);
   }
+
+  const formIsInvalid =
+    !inputs.amount.isValid ||
+    !inputs.date.isValid ||
+    !inputs.description.isValid;
 
   return (
     <View style={styles.form}>
@@ -50,7 +74,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
           textInputConfig={{
             keyboardType: "decimal-pad",
             onChangeText: inputChangedHandler.bind(this, "amount"),
-            value: inputValues.amount, // this sets two way binding
+            value: inputs.amount.value, // this sets two way binding
           }}
         />
         <Input
@@ -60,7 +84,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
             placeholder: "YYYY-MM-DD",
             maxLength: 10,
             onChangeText: inputChangedHandler.bind(this, "date"),
-            value: inputValues.date,
+            value: inputs.date.value,
           }}
         />
       </View>
@@ -71,9 +95,12 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
           // autoCapitalize: "none", // default is sentences
           // autoComplete: false // default is true
           onChangeText: inputChangedHandler.bind(this, "description"),
-          value: inputValues.description,
+          value: inputs.descriptionvalue,
         }}
       />
+      {formIsInvalid && (
+        <Text>Invalid input values - please check your entered data</Text>
+      )}
       <View style={styles.buttons}>
         <Button style={styles.button} mode={"flat"} onPress={onCancel}>
           Cancel
