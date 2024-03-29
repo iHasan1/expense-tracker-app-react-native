@@ -3,12 +3,13 @@ import { View, StyleSheet, Text } from "react-native";
 
 import Input from "./Input";
 import Button from "../UI/Button";
+import { getFormatedDate } from "../../util/date";
 
-function ExpenseForm({ submitButtonLabel, onCancel, onSubmit }) {
+function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
   const [inputValues, setInputValues] = useState({
-    amount: "",
-    date: "",
-    description: "",
+    amount: defaultValues ? defaultValues.amount.toString() : "",
+    date: defaultValues ? getFormatedDate(defaultValues.date) : "",
+    description: defaultValues ? defaultValues.description : "",
   });
 
   function inputChangedHandler(inputIdentifier, enteredText) {
@@ -40,7 +41,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit }) {
           textInputConfig={{
             keyboardType: "decimal-pad",
             onChangeText: inputChangedHandler.bind(this, "amount"),
-            // value: amountValue, // this sets two way binding
+            value: inputValues.amount, // this sets two way binding
           }}
         />
         <Input
@@ -50,6 +51,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit }) {
             placeholder: "YYYY-MM-DD",
             maxLength: 10,
             onChangeText: inputChangedHandler.bind(this, "date"),
+            value: inputValues.date,
           }}
         />
       </View>
@@ -60,6 +62,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit }) {
           // autoCapitalize: "none", // default is sentences
           // autoComplete: false // default is true
           onChangeText: inputChangedHandler.bind(this, "description"),
+          value: inputValues.description,
         }}
       />
       <View style={styles.buttons}>
